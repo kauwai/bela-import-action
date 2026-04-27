@@ -1,0 +1,66 @@
+name: BELA Import
+description: Prepare a repository, run the matching BELA updater offline, and upload the generated ECD file to BELA.
+
+inputs:
+  bela-api-url:
+    description: Base URL of the BELA backend, for example https://bela.example.com.
+    required: true
+  bela-api-token:
+    description: BELA API token used to upload the generated ECD file.
+    required: true
+  source:
+    description: Source name to write into the generated ECD file. Defaults to github.repository.
+    required: false
+    default: ""
+  parent-element-path:
+    description: Optional BELA parent element path.
+    required: false
+    default: ""
+  language:
+    description: Language importer to use. Supported values are auto, clojure, dotnet, java, ruby, and typescript.
+    required: false
+    default: auto
+  updater-tag:
+    description: Docker tag for juxhouse/bela-updater-* images.
+    required: false
+    default: latest
+  working-directory:
+    description: Repository-relative directory to import.
+    required: false
+    default: "."
+
+outputs:
+  language:
+    description: Detected or selected language importer.
+    value: ${{ steps.detect.outputs.language }}
+
+runs:
+  using: composite
+  steps:
+    - id: detect
+      shell: bash
+      env:
+        BELA_LANGUAGE_INPUT: ${{ inputs.language }}
+        BELA_SOURCE_INPUT: ${{ inputs.source }}
+        BELA_WORKING_DIRECTORY: ${{ inputs.working-directory }}
+      run: ${{ github.action_path }}/scripts/detect-language.sh
+
+    - shell: bash
+      env:
+        BELA_UPDATER_TAG: ${{ inputs.updater-tag }}
+        BELA_WORKING_DIRECTORY: ${{ inputs.working-directory }}
+      run: ${{ github.action_path }}/scripts/prepare.sh
+
+    - shell: bash
+      env:
+        BELA_PARENT_ELEMENT_PATH: ${{ inputs.parent-element-path }}
+        BELA_UPDATER_TAG: ${{ inputs.updater-tag }}
+        BELA_WORKING_DIRECTORY: ${{ inputs.working-directory }}
+      run: ${{ github.action_path }}/scripts/run-updater.sh
+
+    - shell: bash
+      env:
+        BELA_API_TOKEN: ${{ inputs.bela-api-token }}
+        BELA_API_URL: ${{ inputs.bela-api-url }}
+        BELA_WORKING_DIRECTORY: ${{ inputs.working-directory }}
+      run: ${{ github.action_path }}/scripts/upload.sh
