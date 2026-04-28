@@ -25,6 +25,17 @@ jobs:
           bela-api-token: ${{ secrets.BELA_API_TOKEN }}
 ```
 
+For monorepos, point `working-directory` at the project folder you want to import:
+
+```yaml
+- uses: juxhouse/bela-import-action@v0.1.0
+  with:
+    bela-api-url: ${{ secrets.BELA_API_URL }}
+    bela-api-token: ${{ secrets.BELA_API_TOKEN }}
+    working-directory: typescript
+    source: ${{ github.repository }}/typescript
+```
+
 ## Inputs
 
 | Input | Required | Default | Description |
