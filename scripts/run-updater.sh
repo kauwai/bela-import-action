@@ -21,9 +21,9 @@ case "$language" in
       parent_args=(--parent-element-path "$parent_element_path")
     fi
     docker run --rm --pull=never --network=none \
-      -v "$PWD:/workspace:ro" \
+      -v "$PWD:/workspace" \
       -v "$PWD/.bela:/.bela" \
-      -v "$PWD/.bela/external_gems:/external_gems:ro" \
+      -v "$PWD/.bela/external_gems:/external_gems" \
       "$updater_image" \
       "${source_args[@]}" \
       "${parent_args[@]}"
@@ -35,7 +35,7 @@ case "$language" in
       parent_args=(-parent-element-path "$parent_element_path")
     fi
     docker run --rm --pull=never --network=none \
-      -v "$PWD:/workspace:ro" \
+      -v "$PWD:/workspace" \
       -v "$PWD/.bela:/.bela" \
       --entrypoint dotnet \
       "$updater_image" \
@@ -52,7 +52,7 @@ case "$language" in
       parent_args=(-parent-element-path "$parent_element_path")
     fi
     docker run --rm --pull=never --network=none \
-      -v "$PWD:/workspace:ro" \
+      -v "$PWD:/workspace" \
       -v "$PWD/.bela:/.bela" \
       "$updater_image" \
       "${source_args[@]}" \

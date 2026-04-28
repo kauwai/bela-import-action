@@ -25,7 +25,7 @@ run_prepare_in_updater_image() {
 case "$language" in
   clojure)
     run_prepare_in_updater_image \
-      'mkdir -p /workspace/.bela /workspace/.m2 /workspace/.gitlibs && if [ -f project.clj ]; then lein deps; else clojure -A:test:dev -Spath; fi && [ ! -d /root/.m2 ] || cp -R /root/.m2/. /workspace/.m2/ && [ ! -d /root/.gitlibs ] || cp -R /root/.gitlibs/. /workspace/.gitlibs/'
+      'mkdir -p /workspace/.bela /workspace/.m2 /workspace/.gitlibs && if [ -f project.clj ]; then lein deps; else clojure -A:test:dev -P && clojure -A:test:dev -Spath; fi && [ ! -d /root/.m2 ] || cp -R /root/.m2/. /workspace/.m2/ && [ ! -d /root/.gitlibs ] || cp -R /root/.gitlibs/. /workspace/.gitlibs/'
     ;;
 
   typescript)
