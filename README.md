@@ -2,7 +2,7 @@
 
 GitHub Action for importing a repository into BELA without sending source code to BELA.
 
-The action prepares the project in GitHub Actions, runs the matching BELA updater Docker image with `--network=none`, and uploads only `.bela/bela-update.ecd` to the BELA API.
+The action discovers supported projects in GitHub Actions, prepares each project, runs the matching BELA updater Docker image with `--network=none`, and uploads only generated `.bela/bela-update.ecd` files to the BELA API.
 
 ## Recommended Usage
 
@@ -18,7 +18,7 @@ jobs:
     with:
       bela-api-url: ${{ vars.BELA_API_URL }}
     secrets:
-      bela-api-token: ${{ secrets.BELA_API_TOKEN }}
+      BELA_API_TOKEN: ${{ secrets.BELA_API_TOKEN }}
 ```
 
 ## Advanced Usage
@@ -58,7 +58,7 @@ jobs:
 
 | Name | Required | Description |
 | --- | --- | --- |
-| `BELA_API_TOKEN` | yes | BELA API token. Use it as the `bela-api-token` secret in the reusable workflow or as the `BELA_API_TOKEN` environment variable when calling the action directly. |
+| `BELA_API_TOKEN` | yes | BELA API token. Use it as the reusable workflow secret or as the `BELA_API_TOKEN` environment variable when calling the action directly. |
 
 ## Supported Detection
 
@@ -72,6 +72,12 @@ The action automatically detects:
 | JavaScript | `package.json` |
 | Ruby | `Gemfile` |
 | TypeScript | `package.json` |
+
+## Project Discovery
+
+The action starts at the repository root. If it detects a project there, it imports that project and does not scan deeper.
+
+If the root is not a project, the action scans child directories. When it finds a project in a directory, it imports that directory and does not scan that directory's children. It still continues scanning sibling directories.
 
 ## Security Model
 

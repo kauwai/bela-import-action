@@ -10,26 +10,19 @@ inputs:
     required: false
 
 outputs:
-  language:
-    description: Detected language importer.
-    value: ${{ steps.detect.outputs.language }}
+  languages:
+    description: Detected language importers.
+    value: ${{ steps.import.outputs.languages }}
+  sources:
+    description: Imported BELA source names.
+    value: ${{ steps.import.outputs.sources }}
 
 runs:
   using: composite
   steps:
-    - id: detect
+    - id: import
       shell: bash
-      run: ${{ github.action_path }}/scripts/detect-language.sh
-
-    - shell: bash
-      run: ${{ github.action_path }}/scripts/prepare.sh
-
-    - shell: bash
-      env:
-        BELA_PARENT_ELEMENT_PATH: ${{ inputs.parent-element-path }}
-      run: ${{ github.action_path }}/scripts/run-updater.sh
-
-    - shell: bash
       env:
         BELA_API_URL: ${{ inputs.bela-api-url }}
-      run: ${{ github.action_path }}/scripts/upload.sh
+        BELA_PARENT_ELEMENT_PATH: ${{ inputs.parent-element-path }}
+      run: ${{ github.action_path }}/scripts/import-projects.sh
