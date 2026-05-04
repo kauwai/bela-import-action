@@ -2,24 +2,12 @@
 set -euo pipefail
 
 working_directory="${BELA_WORKING_DIRECTORY:-.}"
-language_input="${BELA_LANGUAGE_INPUT:-auto}"
-source_input="${BELA_SOURCE_INPUT:-}"
 
 cd "$working_directory"
 
 language=""
 
-if [[ "$language_input" != "auto" ]]; then
-  case "$language_input" in
-    clojure|dotnet|java|ruby|typescript)
-      language="$language_input"
-      ;;
-    *)
-      echo "Unsupported BELA language: $language_input" >&2
-      exit 1
-      ;;
-  esac
-elif [[ -f deps.edn || -f project.clj ]]; then
+if [[ -f deps.edn || -f project.clj ]]; then
   language="clojure"
 elif [[ -f package.json ]]; then
   language="typescript"
@@ -34,7 +22,24 @@ else
   exit 1
 fi
 
-source="${source_input:-${GITHUB_REPOSITORY:-unknown}}"
+project_path="."
+if [[ -n "${GITHUB_WORKSPACE:-}" ]]; then
+  workspace="$(cd "$GITHUB_WORKSPACE" && pwd -P)"
+  current_directory="$(pwd -P)"
+
+  if [[ "$current_directory" == "$workspace" ]]; then
+    project_path="."
+  elif [[ "$current_directory" == "$workspace"/* ]]; then
+    project_path="${current_directory#"$workspace"/}"
+  fi
+fi
+
+repository="${GITHUB_REPOSITORY:-repo}"
+if [[ "$project_path" == "." ]]; then
+  source="$repository"
+else
+  source="$repository/$project_path"
+fi
 
 {
   echo "BELA_LANGUAGE=$language"

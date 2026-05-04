@@ -4,7 +4,26 @@ GitHub Action for importing a repository into BELA without sending source code t
 
 The action prepares the project in GitHub Actions, runs the matching BELA updater Docker image with `--network=none`, and uploads only `.bela/bela-update.ecd` to the BELA API.
 
-## Usage
+## Recommended Usage
+
+```yaml
+name: Import to BELA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bela-import:
+    uses: juxhouse/bela-import-action/.github/workflows/bela-import.yml@v0.1.0
+    with:
+      bela-api-url: ${{ vars.BELA_API_URL }}
+    secrets:
+      bela-api-token: ${{ secrets.BELA_API_TOKEN }}
+```
+
+## Advanced Usage
+
+Use the action directly when you need to customize the job or run project-specific steps before the import.
 
 ```yaml
 name: Import to BELA
@@ -15,50 +34,44 @@ on:
 jobs:
   bela-import:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: juxhouse/bela-import-action@v0.1.0
+        env:
+          BELA_API_TOKEN: ${{ secrets.BELA_API_TOKEN }}
         with:
-          bela-api-url: ${{ secrets.BELA_API_URL }}
-          bela-api-token: ${{ secrets.BELA_API_TOKEN }}
-```
-
-For monorepos, point `working-directory` at the project folder you want to import:
-
-```yaml
-- uses: juxhouse/bela-import-action@v0.1.0
-  with:
-    bela-api-url: ${{ secrets.BELA_API_URL }}
-    bela-api-token: ${{ secrets.BELA_API_TOKEN }}
-    working-directory: typescript
-    source: ${{ github.repository }}/typescript
+          bela-api-url: ${{ vars.BELA_API_URL }}
 ```
 
 ## Inputs
 
-| Input | Required | Default | Description |
-| --- | --- | --- | --- |
-| `bela-api-url` | yes | | BELA backend URL. |
-| `bela-api-token` | yes | | BELA API token. |
-| `source` | no | `${{ github.repository }}` | Source name written to the ECD file. |
-| `parent-element-path` | no | | Optional BELA parent element path. |
-| `language` | no | `auto` | `auto`, `clojure`, `dotnet`, `java`, `ruby`, or `typescript`. |
-| `updater-tag` | no | `latest` | Docker tag used for `juxhouse/bela-updater-*` images. |
-| `working-directory` | no | `.` | Repository-relative directory to import. |
+| Input | Required | Description |
+| --- | --- | --- |
+| `bela-api-url` | yes | BELA backend URL. |
+| `parent-element-path` | no | Optional BELA parent element path. |
+
+## Secrets
+
+| Name | Required | Description |
+| --- | --- | --- |
+| `BELA_API_TOKEN` | yes | BELA API token. Use it as the `bela-api-token` secret in the reusable workflow or as the `BELA_API_TOKEN` environment variable when calling the action directly. |
 
 ## Supported Detection
 
-The `auto` language mode detects:
+The action automatically detects:
 
-| Files | Language |
+| Language | Files |
 | --- | --- |
-| `deps.edn`, `project.clj` | Clojure |
-| `package.json` | TypeScript / JavaScript |
-| `pom.xml`, `build.gradle`, `build.gradle.kts`, `gradlew` | Java |
-| `Gemfile` | Ruby |
-| `*.sln`, `*.csproj` | .NET |
+| C# | `*.sln`, `*.csproj` |
+| Clojure | `deps.edn`, `project.clj` |
+| Java | `pom.xml`, `build.gradle`, `build.gradle.kts`, `gradlew` |
+| JavaScript | `package.json` |
+| Ruby | `Gemfile` |
+| TypeScript | `package.json` |
 
 ## Security Model
 

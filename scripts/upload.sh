@@ -3,7 +3,7 @@ set -euo pipefail
 
 working_directory="${BELA_WORKING_DIRECTORY:-.}"
 api_url="${BELA_API_URL:?bela-api-url input is required.}"
-api_token="${BELA_API_TOKEN:?bela-api-token input is required.}"
+api_token="${BELA_API_TOKEN:?BELA_API_TOKEN environment variable is required.}"
 
 cd "$working_directory"
 
