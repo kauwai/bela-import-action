@@ -14,7 +14,7 @@ The action discovers supported projects in GitHub Actions, prepares each project
 
 ## Action
 
-Use the action directly when you need to customize the job or run project-specific steps before the import.
+Use the [action](https://docs.github.com/en/actions/concepts/workflows-and-actions/about-custom-actions) directly when you need to customize the job or run project-specific steps before the import.
 
 ```yaml
 name: Import to BELA
@@ -50,7 +50,7 @@ When using the action directly, configuration is passed through environment vari
 
 ## Reusable Workflow
 
-Use the reusable workflow when the default import job is enough for your repository.
+Use the [reusable workflow](https://docs.github.com/en/actions/reference/workflows-and-actions/reusable-workflows) when the default import job is enough for your repository.
 
 ```yaml
 name: Import to BELA
