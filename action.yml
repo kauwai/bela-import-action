@@ -1,14 +1,6 @@
 name: BELA Import
 description: Prepare a repository, run the matching BELA updater offline, and upload the generated ECD file to BELA.
 
-inputs:
-  bela-api-url:
-    description: Base URL of the BELA backend, for example https://bela.example.com.
-    required: true
-  parent-element-path:
-    description: Optional BELA parent element path.
-    required: false
-
 outputs:
   languages:
     description: Detected language importers.
@@ -22,7 +14,4 @@ runs:
   steps:
     - id: import
       shell: bash
-      env:
-        BELA_API_URL: ${{ inputs.bela-api-url }}
-        BELA_PARENT_ELEMENT_PATH: ${{ inputs.parent-element-path }}
       run: ${{ github.action_path }}/scripts/import-projects.sh

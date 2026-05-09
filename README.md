@@ -4,24 +4,15 @@ GitHub Action for importing a repository into BELA without sending source code t
 
 The action discovers supported projects in GitHub Actions, prepares each project, runs the matching BELA updater Docker image with `--network=none`, and uploads only generated `.bela/bela-update.ecd` files to the BELA API.
 
-## Recommended Usage
+## Table of Contents
 
-```yaml
-name: Import to BELA
+- [Action](#action)
+- [Reusable Workflow](#reusable-workflow)
+- [Supported Detection](#supported-detection)
+- [Project Discovery](#project-discovery)
+- [Security Model](#security-model)
 
-on:
-  workflow_dispatch:
-
-jobs:
-  bela-import:
-    uses: juxhouse/bela-import-action/.github/workflows/bela-import.yml@v0.1.0
-    with:
-      bela-api-url: ${{ vars.BELA_API_URL }}
-    secrets:
-      BELA_API_TOKEN: ${{ secrets.BELA_API_TOKEN }}
-```
-
-## Advanced Usage
+## Action
 
 Use the action directly when you need to customize the job or run project-specific steps before the import.
 
@@ -42,23 +33,53 @@ jobs:
 
       - uses: juxhouse/bela-import-action@v0.1.0
         env:
+          BELA_API_URL: ${{ vars.BELA_API_URL }}
           BELA_API_TOKEN: ${{ secrets.BELA_API_TOKEN }}
-        with:
-          bela-api-url: ${{ vars.BELA_API_URL }}
+          BELA_PARENT_ELEMENT_PATH: ${{ vars.BELA_PARENT_ELEMENT_PATH }}
 ```
 
-## Inputs
+### Action Environment Variables
+
+When using the action directly, configuration is passed through environment variables.
+
+| Name | Required | Description |
+| --- | --- | --- |
+| `BELA_API_URL` | yes | BELA backend URL. |
+| `BELA_API_TOKEN` | yes | BELA API token. |
+| `BELA_PARENT_ELEMENT_PATH` | no | Optional BELA parent element path. |
+
+## Reusable Workflow
+
+Use the reusable workflow when the default import job is enough for your repository.
+
+```yaml
+name: Import to BELA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bela-import:
+    uses: juxhouse/bela-import-action/.github/workflows/bela-import.yml@v0.1.0
+    with:
+      bela-api-url: ${{ vars.BELA_API_URL }}
+      parent-element-path: ${{ vars.BELA_PARENT_ELEMENT_PATH }}
+    secrets:
+      BELA_API_TOKEN: ${{ secrets.BELA_API_TOKEN }}
+```
+
+### Reusable Workflow Inputs
 
 | Input | Required | Description |
 | --- | --- | --- |
 | `bela-api-url` | yes | BELA backend URL. |
 | `parent-element-path` | no | Optional BELA parent element path. |
 
-## Secrets
+### Reusable Workflow Secrets
 
 | Name | Required | Description |
 | --- | --- | --- |
-| `BELA_API_TOKEN` | yes | BELA API token. Use it as the reusable workflow secret or as the `BELA_API_TOKEN` environment variable when calling the action directly. |
+| `BELA_API_TOKEN` | yes | BELA API token used to upload the generated ECD file. |
 
 ## Supported Detection
 

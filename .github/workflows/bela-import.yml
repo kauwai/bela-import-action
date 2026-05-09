@@ -27,7 +27,6 @@ jobs:
 
       - uses: juxhouse/bela-import-action@v0.1.0
         env:
+          BELA_API_URL: ${{ inputs.bela-api-url }}
           BELA_API_TOKEN: ${{ secrets.BELA_API_TOKEN }}
-        with:
-          bela-api-url: ${{ inputs.bela-api-url }}
-          parent-element-path: ${{ inputs.parent-element-path }}
+          BELA_PARENT_ELEMENT_PATH: ${{ inputs.parent-element-path }}
