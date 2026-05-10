@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: juxhouse/bela-import-action@v0.1.0
+      - uses: kauwai/bela-import-action@v0.3.0
         env:
           BELA_API_URL: ${{ inputs.bela-api-url }}
           BELA_API_TOKEN: ${{ secrets.BELA_API_TOKEN }}
