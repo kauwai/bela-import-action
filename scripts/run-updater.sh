@@ -46,7 +46,27 @@ case "$language" in
       -output /.bela/bela-update.ecd
     ;;
 
-  clojure|java|typescript)
+  java)
+    source_args=(-source "$source")
+    if [[ -n "$parent_element_path" ]]; then
+      parent_args=(-parent-element-path "$parent_element_path")
+    fi
+
+    m2_args=()
+    if [[ -d "$PWD/.m2" ]]; then
+      m2_args=(-v "$PWD/.m2:/.m2:ro")
+    fi
+
+    docker run --rm --pull=never --network=none \
+      -v "$PWD:/workspace" \
+      -v "$PWD/.bela:/.bela" \
+      "${m2_args[@]}" \
+      "$updater_image" \
+      "${source_args[@]}" \
+      "${parent_args[@]}"
+    ;;
+
+  clojure|typescript)
     source_args=(-source "$source")
     if [[ -n "$parent_element_path" ]]; then
       parent_args=(-parent-element-path "$parent_element_path")

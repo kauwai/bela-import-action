@@ -12,9 +12,11 @@ updater_image="juxhouse/bela-updater-${language}:${updater_tag}"
 
 run_prepare_in_updater_image() {
   local script="$1"
+  shift
 
   docker pull "$updater_image"
   docker run --rm \
+    "$@" \
     -v "$PWD:/workspace" \
     -w /workspace \
     --entrypoint /bin/sh \
@@ -44,13 +46,18 @@ case "$language" in
     ;;
 
   java)
+    # The Java updater image is runtime-only: it contains Temurin plus the
+    # updater jar, but no Maven, Gradle, or JDK build tools. Prepare Java
+    # projects with build-tool images, then run the updater offline later.
     if [[ -f pom.xml ]]; then
+      mkdir -p .m2
       docker pull maven:3.9.6-eclipse-temurin-21
       docker run --rm \
+        -v "$PWD/.m2:/.m2" \
         -v "$PWD:/workspace" \
         -w /workspace \
         maven:3.9.6-eclipse-temurin-21 \
-        /bin/sh -lc 'mkdir -p /workspace/.bela && mvn -B clean install && mvn -B dependency:build-classpath -Dmdep.outputFile=target/classpath.txt && mvn -B dependency:copy-dependencies -Dmdep.outputDirectory=target/dependency'
+        /bin/sh -lc 'mkdir -p /workspace/.bela /.m2 /workspace/target && mvn -B -Dmaven.repo.local=/.m2/repository clean install && mvn -B -Dmaven.repo.local=/.m2/repository dependency:build-classpath -Dmdep.outputFile=target/classpath.txt'
     else
       docker pull gradle:8.10.2-jdk21
       cat > bela.gradle <<'EOF'

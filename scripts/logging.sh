@@ -52,9 +52,10 @@ bela_run_logged() {
     bela_log "Completed: $title"
     bela_group_end
     return 0
+  else
+    local status=$?
   fi
 
-  local status=$?
   local tail_lines="${BELA_LOG_TAIL_LINES:-200}"
 
   bela_warn "Failed: $title"
