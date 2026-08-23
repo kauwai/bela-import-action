@@ -1,4 +1,4 @@
-name: BELA Import
+name: BELA Action In GitHub Market Test 
 description: Prepare a repository, run the matching BELA updater offline, and upload the generated ECD file to BELA.
 
 outputs:
